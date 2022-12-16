@@ -7,7 +7,7 @@ packer {
   }
 }
 source "amazon-ebs" "packer-ami-abhay-node" {
-  ami_name      = "packer-ami-abhay-nodejs"
+  ami_name      = "packer-ami-abhay-nodejs23"
   source_ami    = "ami-0ada6d94f396377f2"
   instance_type = "t3a.small"
   region        = "us-east-2"
@@ -18,6 +18,6 @@ build {
     "source.amazon-ebs.packer-ami-abhay-node"
   ]
   provisioner "shell" {
-    script = "./app.sh"
+    script = "./install-node-dependency.sh"
   }
 }
