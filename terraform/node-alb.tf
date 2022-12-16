@@ -1,0 +1,78 @@
+module "alb" {
+  source             = "terraform-aws-modules/alb/aws"
+  version            = "~> 8.0"
+  name               = "my-alb-abhay"
+  load_balancer_type = "application"
+  vpc_id             = module.vpc.vpc_id
+  subnets            = module.vpc.public_subnets
+  security_groups    = [resource.aws_security_group.Security-alb-abhay-sg.id]
+  target_groups = [
+    {
+      name_prefix      = "abhaTG"
+      backend_protocol = "HTTP"
+      backend_port     = 3000
+      target_type      = "instance"
+      health_check = {
+        enabled             = true
+        interval            = 6
+        path                = "/"
+        port                = "traffic-port"
+        healthy_threshold   = 2
+        unhealthy_threshold = 3
+        timeout             = 5
+        protocol            = "HTTP"
+        matcher             = "404"
+      }
+    }
+  ]
+  https_listeners = [
+    {
+      port               = 443
+      protocol           = "HTTPS"
+      certificate_arn    = "arn:aws:acm:us-east-2:421320058418:certificate/b27f97f0-a1e6-460f-bc8b-3d6748967fec"
+      target_group_index = 0
+    }
+  ]
+  http_tcp_listeners = [
+    {
+      port               = 80
+      protocol           = "HTTP"
+      target_group_index = 0
+    }
+  ]
+  tags = {
+    Environment = "Test"
+    owner       = "abhay"
+  }
+}
+
+resource "aws_security_group" "Security-alb-abhay-sg" {
+  name        = "security-alb-abhay-sg"
+  description = "Allow TLS inbound and outbund traffic"
+  vpc_id      = module.vpc.vpc_id
+  ingress {
+    description = "TLS from VPC"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = [module.vpc.vpc_cidr_block]
+  }
+  ingress {
+    description = "TLS from VPC"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = [module.vpc.vpc_cidr_block]
+  }
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+  tags = {
+    Name  = "security-alb-abhay-sg"
+    owner = "abhay"
+  }
+}
