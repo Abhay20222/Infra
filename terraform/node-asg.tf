@@ -48,14 +48,16 @@ resource "aws_security_group" "Security-node-abhay" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    security_groups = [aws_security_group.pritunl-sg.id]
+    #cidr_blocks = ["0.0.0.0/0"]
   }
   ingress {
     description = "TLS from VPC"
     from_port   = 3000
     to_port     = 3000
     protocol    = "tcp"
-    cidr_blocks = [module.vpc.vpc_cidr_block]
+    security_groups = [aws_security_group.security-alb-abhay-sg.id]
+    #cidr_blocks = [module.vpc.vpc_cidr_block]
   }
   egress {
     from_port        = 0
