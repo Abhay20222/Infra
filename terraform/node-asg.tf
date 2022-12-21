@@ -56,7 +56,7 @@ resource "aws_security_group" "Security-node-abhay" {
     from_port   = 3000
     to_port     = 3000
     protocol    = "tcp"
-    security_groups = [aws_security_group.security-alb-abhay-sg.id]
+    security_groups = [aws_security_group.Security-alb-abhay-sg.id]
     #cidr_blocks = [module.vpc.vpc_cidr_block]
   }
   egress {
